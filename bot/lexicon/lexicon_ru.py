@@ -1,3 +1,6 @@
+from bot.config_data.config import load_config
+config = load_config()
+
 LEXICON_RU: dict[str, str] = {
     'loading_model': '⌛ Ответ генерируется. Пожалуйста подождите...',
     'back': '↩️ Назад',
@@ -12,7 +15,7 @@ LEXICON_RU: dict[str, str] = {
     'admin_users': '👥 Пользователи',
     'admin_response': '🔢 Осталось запросов',
     'no_response': '🤷‍♂️ Ответ от ChatGPT не получен. \nПовторите попытку ️⬇️',
-    'subscribe_channel': 'Чтобы пользовать ChatGPT, нужно быть подписчиком моей группы ⬇️\n\n https://t.me/+GEM1faFLkA85MThi'
+    'subscribe_channel': f'Чтобы пользовать ChatGPT, нужно быть подписчиком моей группы ⬇️\n\n {config.tg_bot.group_link}'
 }
 
 LEXICON_COMMANDS_RU: dict[str, str] = {'/start': 'Запуск бота', '/cancel': '🗑️ Очистить контекст'}

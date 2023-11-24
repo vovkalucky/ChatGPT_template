@@ -14,6 +14,7 @@ class TgBot:
     token: str            # Токен для доступа к телеграм-боту
     admin_ids: list[int]  # Список id администраторов бота
     group_id: int         # id группы в которой будет работать бот
+    group_link: str        # ссылка на группу в которой будет работать бот
     bot_username: str     # username бота
     admin_username: str   # username админа для связи (зашит в инлайн кнопке)
 
@@ -34,6 +35,7 @@ def load_config(path: str | None = None) -> Config:
             token=env('BOT_TOKEN'),
             admin_ids=list(map(int, env.list('ADMIN_IDS'))),
             group_id=env('GROUP_ID'),
+            group_link=env('GROUP_LINK'),
             bot_username=env('BOT_USERNAME'),
             admin_username=env('ADMIN_USERNAME')
         ),
