@@ -1,0 +1,7 @@
+.env
+__pycache__
+/venv
+/.idea
+debug.py
+bot_logs.log
+chatgpt.db
