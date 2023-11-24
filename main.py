@@ -24,7 +24,7 @@ async def main() -> None:
     # Конфигурируем логирование
     logging.basicConfig(
         level=logging.INFO,
-        filename='bot_logs.log',
+        #filename='bot_logs.log',
         format='%(filename)s:%(lineno)d #%(levelname)-8s '
                '[%(asctime)s] - %(name)s - %(message)s')
     # handler = TimedRotatingFileHandler('bot_logs.log', when='M', backupCount=4)
