@@ -94,7 +94,7 @@ async def minus_request_count(message: types.Message | types.CallbackQuery):
             conn.close()
 
 
-async def check_user_request_count(message: types.Message):
+async def check_user_request_count(message: types.Message | types.CallbackQuery):
     conn = sq.connect('chatgpt.db')
     cur = conn.cursor()
     try:

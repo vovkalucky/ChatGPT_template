@@ -1,20 +1,14 @@
 import asyncio
-
 from aiogram import types
 from aiogram import F
-import os
-import time
 from aiogram import Bot
-from bot.keyboards.user_keyboards import get_main_kb, get_about_kb, get_context_kb, get_gpt_true_false_kb
-from aiogram.types import CallbackQuery
-from aiogram.filters import Command, StateFilter
+from bot.keyboards.user_keyboards import get_gpt_true_false_kb
 from aiogram import Router
 from bot.lexicon.lexicon_ru import LEXICON_RU
 from bot.external_services.chatgpt4 import connect_client, add_message_to_thread, run_assistant, wait_run_assistant, \
     response_gpt
 from bot.models.methods import minus_request_count, check_user_request_count
 from bot.external_services.chatgpt4 import recognise_voice
-
 import logging
 
 # Создайте логгер для этого модуля или хэндлера
@@ -28,28 +22,20 @@ from aiogram.fsm.context import FSMContext
 # Инициализируем роутер уровня модуля
 router: Router = Router()
 
-# Создаем "базу данных" пользователей
-user_dict: dict[int, dict[str, str, str]] = {}
-
 
 @router.message(F.voice, UseGPT.state1_user_request)
 async def send_voice_message(message: types.Voice, bot: Bot, state: FSMContext) -> None:
     message_wait: types.Message = await message.answer("⌛ Перевожу ваш запрос в текст...")
     await bot.send_chat_action(message.chat.id, 'typing')  # Эффект набора сообщения "Печатает..."
-    print(message.from_user.id)
-    #client = user_dict[message.from_user.id]['client_key']
     client = await connect_client()
-
     voice = message.voice
     file_id = voice.file_id
 
     # Получение информации о файле голосового сообщения
     file_info = await bot.get_file(file_id)
     file_path = file_info.file_path
-
     text_from_voice = await recognise_voice(client, file_path)
     await state.update_data(message_voice=text_from_voice)
-    #await state.set_state(UseGPT.state2_user_request_voice)
     await message_wait.edit_text(text=f"<b>Ваш запрос:</b> \n\n{text_from_voice} \n\nВерно?", reply_markup=get_gpt_true_false_kb())
 
 
@@ -57,12 +43,8 @@ async def send_voice_message(message: types.Voice, bot: Bot, state: FSMContext) 
 async def send_text_from_voice_message(message: types.CallbackQuery, bot: Bot, state: FSMContext) -> None:
     print(message)
     data = await state.get_data()
-    #text_from_voice = user_dict[message.from_user.id]['message_voice']
-    #client = user_dict[message.from_user.id]['client_key']
     client = data['client_key']
-    #assistant = user_dict[message.from_user.id]['assistant_key']
     assistant = data['assistant_key']
-    #thread = user_dict[message.from_user.id]['thread_key']
     thread = data['thread_key']
     content = data['message_voice']
     print(content)
@@ -85,7 +67,6 @@ async def send_text_from_voice_message(message: types.CallbackQuery, bot: Bot, s
     except asyncio.TimeoutError:
         # Обработка случая, когда статус не изменился в течение timeout (сек)
         await message.message.answer(text=LEXICON_RU['no_response'])
-    #await message.message.answer("здесь будет ответ от жпт")
 
 
 @router.callback_query(lambda callback_query: callback_query.data == 'no', UseGPT.state1_user_request)
