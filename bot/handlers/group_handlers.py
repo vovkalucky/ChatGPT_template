@@ -4,9 +4,9 @@ from aiogram import types
 from aiogram import Bot
 from aiogram import Router
 from bot.lexicon.lexicon_ru import LEXICON_RU
-from chatgpt4 import connect_client, create_assistant, create_thread, add_message_to_thread, run_assistant, \
+from bot.external_services.chatgpt4 import connect_client, create_assistant, create_thread, add_message_to_thread, run_assistant, \
     response_gpt, clear_context, wait_run_assistant
-from bot.models.methods import minus_request_count, check_user_request_count, sql_add_user, sql_group_add_user
+from bot.models.methods import minus_request_count, check_user_request_count, sql_group_add_user
 from bot.filters.chat_type import ChatTypeFilter
 import logging
 from aiogram import F

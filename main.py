@@ -2,7 +2,7 @@ import asyncio
 import os
 from dotenv import load_dotenv
 from aiogram import Bot, Dispatcher
-from bot.handlers import user_handlers, admin_handlers, group_handlers
+from bot.handlers import user_handlers, admin_handlers, group_handlers, dalle_handlers, voice_handlers
 from bot.keyboards.set_menu import set_main_menu
 import logging
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -44,7 +44,7 @@ async def main() -> None:
     await set_main_menu(bot)
 
     # Регистрируем роутеры в диспетчере
-    dp.include_routers(group_handlers.router, user_handlers.router, admin_handlers.router)
+    dp.include_routers(group_handlers.router, user_handlers.router, voice_handlers.router, dalle_handlers.router, admin_handlers.router)
 
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)

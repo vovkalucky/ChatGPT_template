@@ -1,5 +1,7 @@
 import sqlite3 as sq
 from aiogram import types
+from bot.config_data.config import load_config
+config = load_config()
 
 
 async def db_start():
@@ -78,11 +80,11 @@ async def remove_user_from_database(user_id: int):
             conn.close()
 
 
-async def minus_request_count(message):
+async def minus_request_count(message: types.Message | types.CallbackQuery):
     conn = sq.connect('chatgpt.db')
     cur = conn.cursor()
     try:
-        user_id = message.chat.id
+        user_id = message.from_user.id
         cur.execute("""UPDATE users SET request_count = request_count - 1 WHERE user_id = ?""", (user_id,))
         conn.commit()
     except sq.Error as error:

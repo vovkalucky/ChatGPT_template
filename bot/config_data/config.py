@@ -18,11 +18,16 @@ class TgBot:
     bot_username: str     # username бота
     admin_username: str   # username админа для связи (зашит в инлайн кнопке)
 
+@dataclass
+class DatabaseConfig:
+    db_password: str   # Пароль к базе данных
 
 @dataclass
 class Config:
     tg_bot: TgBot
     open_ai: OpenaiConfig
+    database: DatabaseConfig
+
 
 def load_config(path: str | None = None) -> Config:
     # Создаем экземпляр класса Env
@@ -43,6 +48,9 @@ def load_config(path: str | None = None) -> Config:
             organization_id=env('OPEN_AI_ORGANIZATION_ID'),
             api_key=env('OPENAI_API_KEY'),
             assistant_id=env('ASSISTANT_ID'),
+        ),
+        database=DatabaseConfig(
+            db_password="123456"
         )
     )
 
