@@ -40,7 +40,7 @@ async def send_voice_message(message: types.Voice, bot: Bot, state: FSMContext) 
 
 
 @router.callback_query(lambda callback_query: callback_query.data == 'yes', UseGPT.state1_user_request)
-async def send_text_from_voice_message(message: types.CallbackQuery, bot: Bot, state: FSMContext) -> None:
+async def send_text_from_voice_message(message: types.CallbackQuery, state: FSMContext) -> None:
     print(message)
     data = await state.get_data()
     client = data['client_key']
@@ -70,6 +70,6 @@ async def send_text_from_voice_message(message: types.CallbackQuery, bot: Bot, s
 
 
 @router.callback_query(lambda callback_query: callback_query.data == 'no', UseGPT.state1_user_request)
-async def voice_message_repeat(message: types.CallbackQuery, bot: Bot, state: FSMContext) -> None:
-    await message.message.answer(text="Повтори свой запрос")
+async def voice_message_repeat(message: types.CallbackQuery) -> None:
+    await message.message.answer(text=LEXICON_RU['repeat_voice_message'])
 

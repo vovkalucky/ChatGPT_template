@@ -17,7 +17,7 @@ from bot.states.states import UseGPT
 from aiogram.fsm.context import FSMContext
 
 # Создайте логгер для этого модуля или хэндлера
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 
 
 # Инициализируем роутер уровня модуля
@@ -56,7 +56,7 @@ async def context_clear(message: types.Message, state: FSMContext) -> None:
 
 @router.message(F.text, UseGPT.state1_user_request, SubChecker())
 async def send_message(message: types.Message, bot: Bot) -> None:
-    logger.info(f"Пользователь {message.from_user.username}(id={message.from_user.id}) спрашивает: {message.text}")
+    #logger.info(f"Пользователь {message.from_user.username}(id={message.from_user.id}) спрашивает: {message.text}")
     client = user_dict[message.from_user.id]['client_key']
     assistant = user_dict[message.from_user.id]['assistant_key']
     thread = user_dict[message.from_user.id]['thread_key']
@@ -74,7 +74,7 @@ async def send_message(message: types.Message, bot: Bot) -> None:
                 answer_gpt = response_gpt(client, thread)
                 await minus_request_count(message)
                 message_answer = await waiting_message.edit_text(await answer_gpt)
-                logger.info(f"GPT дал ответ пользователю {message.from_user.username}(id={message.from_user.id}): {message_answer.text}")
+                #logger.info(f"GPT дал ответ пользователю {message.from_user.username}(id={message.from_user.id}): {message_answer.text}")
         else:
             await waiting_message.edit_text(text=LEXICON_RU['response_null'])
     except asyncio.TimeoutError:

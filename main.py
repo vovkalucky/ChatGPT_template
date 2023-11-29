@@ -1,10 +1,10 @@
 import asyncio
-import os
-from dotenv import load_dotenv
+import datetime
+import logging
+from logging.handlers import TimedRotatingFileHandler
 from aiogram import Bot, Dispatcher
 from bot.handlers import user_handlers, admin_handlers, group_handlers, dalle_handlers, voice_handlers
 from bot.keyboards.set_menu import set_main_menu
-import logging
 from aiogram.fsm.storage.memory import MemoryStorage
 from bot.models.methods import db_start
 from bot.config_data.config import load_config
@@ -17,20 +17,39 @@ async def on_startup():
 
 
 async def main() -> None:
+    # Создаем экземпляр логгера
+    logger = logging.getLogger()
+    logger.setLevel(logging.INFO)
+
+    # Создаем handler
+    handler = TimedRotatingFileHandler(f'logs/bot_logs.log', when='M', backupCount=4)
+    handler.setLevel(logging.INFO)
+
+    # Настройка формата сообщений
+    formatter = logging.Formatter('%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s')
+    handler.setFormatter(formatter)
+
+    # Добавляем handler к логгеру
+    logger.addHandler(handler)
+
+
     # Инициализируем логгер
-    logger = logging.getLogger(__name__)
-
-
-    # Конфигурируем логирование
-    logging.basicConfig(
-        level=logging.INFO,
-        #filename='bot_logs.log',
-        format='%(filename)s:%(lineno)d #%(levelname)-8s '
-               '[%(asctime)s] - %(name)s - %(message)s')
+    # logger = logging.getLogger(__name__)
+    #
     # handler = TimedRotatingFileHandler('bot_logs.log', when='M', backupCount=4)
-    # logger.addHandler(handler)
+    # handler.setLevel(logging.INFO)
+    #
+    # # Конфигурируем логирование
+    # logging.basicConfig(
+    #     level=logging.INFO,
+    #     filename='bot_logs.log',
+    #     format='%(filename)s:%(lineno)d #%(levelname)-8s '
+    #            '[%(asctime)s] - %(name)s - %(message)s',
+    # )
+
+    #logger.addHandler(handler)
     # Выводим в консоль информацию о начале запуска бота
-    logger.info('Starting bot')
+    #logger.info('Starting bot')
 
     config = load_config()
 
