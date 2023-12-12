@@ -22,30 +22,28 @@ async def main() -> None:
     logger.setLevel(logging.INFO)
 
     # Создаем handler
-    handler = TimedRotatingFileHandler(f'logs/bot_logs.log', when='M', backupCount=4)
-    handler.setLevel(logging.INFO)
+    #handler = TimedRotatingFileHandler(f'logs/bot_logs.log', when='D', backupCount=4)
+    #handler.setLevel(logging.INFO)
 
     # Настройка формата сообщений
     formatter = logging.Formatter('%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s')
-    handler.setFormatter(formatter)
+    #handler.setFormatter(formatter)
 
     # Добавляем handler к логгеру
-    logger.addHandler(handler)
+    #logger.addHandler(handler)
 
 
     # Инициализируем логгер
-    # logger = logging.getLogger(__name__)
-    #
-    # handler = TimedRotatingFileHandler('bot_logs.log', when='M', backupCount=4)
-    # handler.setLevel(logging.INFO)
-    #
-    # # Конфигурируем логирование
-    # logging.basicConfig(
-    #     level=logging.INFO,
-    #     filename='bot_logs.log',
-    #     format='%(filename)s:%(lineno)d #%(levelname)-8s '
-    #            '[%(asctime)s] - %(name)s - %(message)s',
-    # )
+    logger = logging.getLogger(__name__)
+
+
+    # Конфигурируем логирование
+    logging.basicConfig(
+        level=logging.INFO,
+        #filename='bot_logs.log',
+        format='%(filename)s:%(lineno)d #%(levelname)-8s '
+               '[%(asctime)s] - %(name)s - %(message)s',
+    )
 
     #logger.addHandler(handler)
     # Выводим в консоль информацию о начале запуска бота
@@ -70,11 +68,14 @@ async def main() -> None:
     # собственно способ зарегистрировать функцию которая сработает при запуске бота
     dp.startup.register(on_startup)
     try:
-        await dp.start_polling(bot, skip_updates=True, allowed_updates=dp.resolve_used_update_types()) #on_startup=on_startup
+        await dp.start_polling(bot, allowed_updates=dp.resolve_used_update_types()) #on_startup=on_startup
     except Exception as _ex:
         print(f'There is exception - {_ex}')
 
 
 # Запускаем поллинг
 if __name__ == '__main__':
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print("Stop bot")

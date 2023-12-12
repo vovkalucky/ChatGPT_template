@@ -2,10 +2,13 @@ import asyncio
 from aiogram import types
 from aiogram import F
 from aiogram import Bot
+from aiogram.fsm.state import default_state
 
 from bot.filters.check_subscription import SubChecker
-from aiogram.filters import Command
+from aiogram.filters import Command, StateFilter
 from aiogram import Router
+
+from bot.keyboards.user_keyboards import get_main_kb
 from bot.lexicon.lexicon_ru import LEXICON_RU
 from bot.external_services.chatgpt4 import connect_client, create_assistant, create_thread, add_message_to_thread, run_assistant, \
     response_gpt, clear_context, wait_run_assistant
@@ -27,11 +30,24 @@ router: Router = Router()
 user_dict: dict[int, dict[str, str, str]] = {}
 
 
-# Этот хэндлер будет срабатывать на команду "/start"
 @router.message(Command(commands=['start']))
+@router.callback_query(lambda callback_query: callback_query.data == 'back')
 async def process_start_command(message: types.Message | types.CallbackQuery, state: FSMContext) -> None:
-    await sql_add_user(message)
+    #print(message)
+    if isinstance(message, types.CallbackQuery):
+        await message.message.answer(text=LEXICON_RU['/start']) #reply_markup=get_main_kb()
+        await message.answer()
+    else:
+        await message.answer(text=LEXICON_RU['/start'])
     await state.clear()
+
+
+@router.message(Command(commands=['gpt']))
+async def process_start_command(message: types.Message | types.CallbackQuery, state: FSMContext) -> None:
+    print(message)
+    print("gpt")
+    await sql_add_user(message)
+    #await state.clear()
     client = await connect_client()
     assistant = await create_assistant()
     thread = await create_thread(client)
