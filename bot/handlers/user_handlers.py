@@ -3,6 +3,7 @@ from aiogram import types
 from aiogram import F
 from aiogram import Bot
 from aiogram.fsm.state import default_state
+from aiogram.types import FSInputFile
 
 from bot.filters.check_subscription import SubChecker
 from aiogram.filters import Command, StateFilter
@@ -16,7 +17,7 @@ from bot.models.methods import minus_request_count, check_user_request_count, sq
 
 import logging
 #работа с машиной состояний
-from bot.states.states import UseGPT
+from bot.states.states import UseGPT, UseDalle
 from aiogram.fsm.context import FSMContext
 
 # Создайте логгер для этого модуля или хэндлера
@@ -33,21 +34,28 @@ user_dict: dict[int, dict[str, str, str]] = {}
 @router.message(Command(commands=['start']))
 @router.callback_query(lambda callback_query: callback_query.data == 'back')
 async def process_start_command(message: types.Message | types.CallbackQuery, state: FSMContext) -> None:
-    #print(message)
+    #print(message.model_dump_json())
     if isinstance(message, types.CallbackQuery):
-        await message.message.answer(text=LEXICON_RU['/start']) #reply_markup=get_main_kb()
+        #await message.message.answer(text=LEXICON_RU['/start']) #reply_markup=get_main_kb()
+        await message.message.answer_photo(FSInputFile("ava.jpg"), caption=LEXICON_RU['/start'])
         await message.answer()
     else:
-        await message.answer(text=LEXICON_RU['/start'])
+        #await message.answer(text=LEXICON_RU['/start'])
+        await message.answer_photo(FSInputFile("ava.jpg"), caption=LEXICON_RU['/start'])
+        await sql_add_user(message)
     await state.clear()
+
+
+@router.message(Command(commands=['dalle']))
+@router.callback_query(lambda callback_query: callback_query.data == 'dalle')
+async def create_image_start(message: types.Message, state: FSMContext) -> None:
+    await message.answer(text=LEXICON_RU['create_image'])
+    await state.set_state(UseDalle.state_dalle_user_request)
 
 
 @router.message(Command(commands=['gpt']))
 async def process_start_command(message: types.Message | types.CallbackQuery, state: FSMContext) -> None:
-    print(message)
-    print("gpt")
-    await sql_add_user(message)
-    #await state.clear()
+    #await sql_add_user(message)
     client = await connect_client()
     assistant = await create_assistant()
     thread = await create_thread(client)
@@ -70,7 +78,7 @@ async def context_clear(message: types.Message, state: FSMContext) -> None:
     await message.answer(text=LEXICON_RU['/cancel'])
 
 
-@router.message(F.text, UseGPT.state1_user_request, SubChecker())
+@router.message(F.text, UseGPT.state1_user_request) #, SubChecker()
 async def send_message(message: types.Message, bot: Bot) -> None:
     #logger.info(f"Пользователь {message.from_user.username}(id={message.from_user.id}) спрашивает: {message.text}")
     client = user_dict[message.from_user.id]['client_key']

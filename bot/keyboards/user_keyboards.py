@@ -5,6 +5,7 @@ from bot.lexicon.lexicon_ru import LEXICON_RU
 from bot.config_data.config import load_config
 config = load_config()
 
+
 def get_main_kb_inline() -> InlineKeyboardMarkup:
     # Создаем объект инлайн-клавиатуры
     keyboard: InlineKeyboardBuilder = InlineKeyboardBuilder()

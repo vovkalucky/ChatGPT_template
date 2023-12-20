@@ -25,14 +25,14 @@ logger = logging.getLogger(__name__)
 router: Router = Router()
 
 
-@router.message(Command(commands=['dalle']))
-@router.callback_query(lambda callback_query: callback_query.data == 'dalle')
-async def create_image_start(message: types.Message, state: FSMContext) -> None:
-    await message.answer(text=LEXICON_RU['create_image'])
-    await state.set_state(UseDalle.state_dalle_user_request)
+# @router.message(Command(commands=['dalle']))
+# @router.callback_query(lambda callback_query: callback_query.data == 'dalle')
+# async def create_image_start(message: types.Message, state: FSMContext) -> None:
+#     await message.answer(text=LEXICON_RU['create_image'])
+#     await state.set_state(UseDalle.state_dalle_user_request)
 
 
-@router.message(F.text, UseDalle.state_dalle_user_request, SubChecker())
+@router.message(F.text, UseDalle.state_dalle_user_request) #, SubChecker()
 async def create_image_handler(message: types.Message, bot: Bot) -> None:
     waiting_message: types.Message = await message.answer(text=LEXICON_RU['loading_model'])
 

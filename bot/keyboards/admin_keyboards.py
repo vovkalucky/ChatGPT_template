@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 from bot.lexicon.lexicon_ru import LEXICON_RU
@@ -5,9 +6,9 @@ import os
 
 
 def get_admin_main_kb() -> InlineKeyboardMarkup:
-    # Создаем объект инлайн-клавиатуры
+    # РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚ РёРЅР»Р°Р№РЅ-РєР»Р°РІРёР°С‚СѓСЂС‹
     keyboard: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    # Создаем объекты инлайн-кнопок
+    # РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚С‹ РёРЅР»Р°Р№РЅ-РєРЅРѕРїРѕРє
     url_button_1: InlineKeyboardButton = InlineKeyboardButton(
         text=LEXICON_RU['gpt'],
         callback_data='gpt')
@@ -17,23 +18,32 @@ def get_admin_main_kb() -> InlineKeyboardMarkup:
     url_button_3: InlineKeyboardButton = InlineKeyboardButton(
         text=LEXICON_RU['admin'],
         callback_data='admin')
-    # Добавляем кнопки в клавиатуру методом add
+    # Р”РѕР±Р°РІР»СЏРµРј РєРЅРѕРїРєРё РІ РєР»Р°РІРёР°С‚СѓСЂСѓ РјРµС‚РѕРґРѕРј add
     keyboard.add(url_button_1).add(url_button_2).add(url_button_3)
-    keyboard.adjust(1)  # делает строки по 1 кнопке
+    keyboard.adjust(1)  # РґРµР»Р°РµС‚ СЃС‚СЂРѕРєРё РїРѕ 1 РєРЅРѕРїРєРµ
     return keyboard.as_markup()
 
 
 def get_admin_menu_kb() -> InlineKeyboardMarkup:
-    # Создаем объект инлайн-клавиатуры
+    # РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚ РёРЅР»Р°Р№РЅ-РєР»Р°РІРёР°С‚СѓСЂС‹
     keyboard: InlineKeyboardBuilder = InlineKeyboardBuilder()
-    # Создаем объекты инлайн-кнопок
+    # РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚С‹ РёРЅР»Р°Р№РЅ-РєРЅРѕРїРѕРє
     url_button_1: InlineKeyboardButton = InlineKeyboardButton(
         text=LEXICON_RU['admin_users'],
         callback_data='admin_users')
     url_button_2: InlineKeyboardButton = InlineKeyboardButton(
         text=LEXICON_RU['admin_response'],
         callback_data='admin_response')
-    # Добавляем кнопки в клавиатуру методом add
-    keyboard.add(url_button_1).add(url_button_2)
-    keyboard.adjust(1)  # делает строки по 1 кнопке
+    url_button_3: InlineKeyboardButton = InlineKeyboardButton(
+        text=LEXICON_RU['admin_send'],
+        callback_data='admin_send_message')
+    url_button_4: InlineKeyboardButton = InlineKeyboardButton(
+        text=LEXICON_RU['back'],
+        callback_data='back')
+    url_button_5: InlineKeyboardButton = InlineKeyboardButton(
+        text=LEXICON_RU['admin_analytic'],
+        callback_data='analytic')
+    # Р”РѕР±Р°РІР»СЏРµРј РєРЅРѕРїРєРё РІ РєР»Р°РІРёР°С‚СѓСЂСѓ РјРµС‚РѕРґРѕРј add
+    keyboard.add(url_button_1, url_button_2, url_button_3, url_button_5, url_button_4)
+    keyboard.adjust(1)  # РґРµР»Р°РµС‚ СЃС‚СЂРѕРєРё РїРѕ 1 РєРЅРѕРїРєРµ
     return keyboard.as_markup()

@@ -1,36 +1,42 @@
 import sqlite3 as sq
 from aiogram import types
 from bot.config_data.config import load_config
+from datetime import datetime, timedelta
 config = load_config()
 
 
-async def db_start():
-    global conn, cur
-    conn = sq.connect('chatgpt.db')
-    cur = conn.cursor()
-    if conn:
-        print('Database connect OK')
-    cur.execute("""CREATE TABLE IF NOT EXISTS users(user_id PRIMARY KEY, username TEXT, date_enter DATETIME, request_count INTEGER)""")
-    conn.commit()
 
+# async def db_start():
+#     global conn, cur
+#     conn = sq.connect('chatgpt.db')
+#     cur = conn.cursor()
+#     if conn:
+#         print('Database connect OK')
+#     cur.execute("""CREATE TABLE IF NOT EXISTS users(user_id PRIMARY KEY, username TEXT, date_enter DATETIME, request_count INTEGER)""")
+#     conn.commit()
 
 async def sql_add_user(message):
     conn = sq.connect('chatgpt.db')
     cur = conn.cursor()
+    if conn:
+        print('Database connect OK')
+    cur.execute("""CREATE TABLE IF NOT EXISTS users(user_id PRIMARY KEY, username TEXT, date_enter DATETIME, request_count INTEGER, premium BOOLEAN)""")
+    conn.commit()
     try:
         user_id = message.chat.id
         username = message.chat.username
-        date_enter = message.date
-        request_count = 30
+        date_enter = message.date.strftime('%Y-%m-%d')
+        premium = message.from_user.is_premium
+        request_count = config.tg_bot.request_count #15 запросов
         # Проверка наличия пользователя
         cur.execute('SELECT * FROM users WHERE user_id == ?', (user_id,))
         result = cur.fetchone()
         if result is None:
-            cur.execute('INSERT INTO users VALUES (?,?,?,?)', (user_id, username, date_enter, request_count))
+            cur.execute('INSERT INTO users VALUES (?,?,?,?,?)', (user_id, username, date_enter, request_count, premium))
             conn.commit()
             print('Новый пользователь добавлен в базу')
-        # else:
-        #     print("Значение user_id уже существует в таблице.")
+        else:
+            print("Пользователь уже существует в таблице.")
 
     except sq.Error as error:
         print("Error:", error)
@@ -46,7 +52,8 @@ async def sql_group_add_user(message):
         user_id = message.from_user.id
         username = message.from_user.username
         date_enter = message.date
-        request_count = 30
+        request_count = config.tg_bot.request_count # 15 запросов
+
         # Проверка наличия пользователя
         cur.execute('SELECT * FROM users WHERE user_id == ?', (user_id,))
         result = cur.fetchone()
@@ -115,7 +122,41 @@ async def get_users():
     try:
         count_users = cur.execute("SELECT COUNT(*) FROM users").fetchone()[0]
         all_users = cur.execute("SELECT * FROM users").fetchall()
-        return (count_users, all_users)
+        return count_users, all_users
+    except sq.Error as error:
+        print("Error:", error)
+    finally:
+        if conn:
+            conn.close()
+
+
+async def count_user_for_period(days: int):
+    conn = sq.connect('chatgpt.db')
+    cur = conn.cursor()
+    # Определяем начало и конец последней недели
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days)
+
+    # Преобразовываем даты к нужному формату для SQLite (YYYY-MM-DD)
+    start_date_str = start_date.strftime('%Y-%m-%d')
+    end_date_str = end_date.strftime('%Y-%m-%d')
+
+    try:
+        count_users = cur.execute("SELECT COUNT(*) FROM users WHERE date_enter BETWEEN ? AND ?", (start_date_str, end_date_str)).fetchone()[0]
+        return count_users
+    except sq.Error as error:
+        print("Error:", error)
+    finally:
+        if conn:
+            conn.close()
+
+async def count_premium_users():
+    conn = sq.connect('chatgpt.db')
+    cur = conn.cursor()
+
+    try:
+        count_premium_users = cur.execute("SELECT COUNT(*) FROM users WHERE premium NOT NULL").fetchone()[0]
+        return count_premium_users
     except sq.Error as error:
         print("Error:", error)
     finally:

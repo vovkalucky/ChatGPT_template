@@ -17,7 +17,7 @@ class TgBot:
     group_link: str        # ссылка на группу в которой будет работать бот
     bot_username: str     # username бота
     admin_username: str   # username админа для связи (зашит в инлайн кнопке)
-
+    request_count: int    # число бесплатных запросов к нейросети
 @dataclass
 class DatabaseConfig:
     db_password: str   # Пароль к базе данных
@@ -42,7 +42,8 @@ def load_config(path: str | None = None) -> Config:
             group_id=env('GROUP_ID'),
             group_link=env('GROUP_LINK'),
             bot_username=env('BOT_USERNAME'),
-            admin_username=env('ADMIN_USERNAME')
+            admin_username=env('ADMIN_USERNAME'),
+            request_count=env('REQUEST_COUNT')
         ),
         open_ai=OpenaiConfig(
             organization_id=env('OPEN_AI_ORGANIZATION_ID'),
