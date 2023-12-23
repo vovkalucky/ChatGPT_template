@@ -6,9 +6,9 @@ from bot.keyboards.user_keyboards import get_gpt_true_false_kb
 from aiogram import Router
 from bot.lexicon.lexicon_ru import LEXICON_RU
 from bot.external_services.chatgpt4 import connect_client, add_message_to_thread, run_assistant, wait_run_assistant, \
-    response_gpt
+    response_gpt, recognise_audio_and_voice
 from bot.models.methods import minus_request_count, check_user_request_count
-from bot.external_services.chatgpt4 import recognise_voice
+#from bot.external_services.chatgpt4 import recognise_voice
 import logging
 
 # Создайте логгер для этого модуля или хэндлера
@@ -23,6 +23,23 @@ from aiogram.fsm.context import FSMContext
 router: Router = Router()
 
 
+@router.message(F.audio, UseGPT.state1_user_request) #, SubChecker()
+async def send_media_message(message: types.Message, bot: Bot, state: FSMContext) -> None:
+    #await message.answer(message.model_dump_json())
+    message_wait: types.Message = await message.answer("⌛ Перевожу аудио запрос в текст...")
+    client = await connect_client()
+    audio = message.audio
+    file_id = audio.file_id
+
+    # Получение информации о файле голосового сообщения
+    file_info = await bot.get_file(file_id)
+    file_path = file_info.file_path
+    file_ext = audio.file_name.split('.')[-1]
+    text_from_voice = await recognise_audio_and_voice(client, file_path, file_ext )
+    await state.update_data(message_voice=text_from_voice)
+    await message_wait.edit_text(text=f"<b>Ваш запрос:</b> \n\n{text_from_voice} \n\nВерно?", reply_markup=get_gpt_true_false_kb())
+
+
 @router.message(F.voice, UseGPT.state1_user_request)
 async def send_voice_message(message: types.Voice, bot: Bot, state: FSMContext) -> None:
     message_wait: types.Message = await message.answer("⌛ Перевожу ваш запрос в текст...")
@@ -34,7 +51,8 @@ async def send_voice_message(message: types.Voice, bot: Bot, state: FSMContext) 
     # Получение информации о файле голосового сообщения
     file_info = await bot.get_file(file_id)
     file_path = file_info.file_path
-    text_from_voice = await recognise_voice(client, file_path)
+    file_ext = file_path.split('.')[-1]
+    text_from_voice = await recognise_audio_and_voice(client, file_path, file_ext)
     await state.update_data(message_voice=text_from_voice)
     await message_wait.edit_text(text=f"<b>Ваш запрос:</b> \n\n{text_from_voice} \n\nВерно?", reply_markup=get_gpt_true_false_kb())
 
@@ -72,4 +90,7 @@ async def send_text_from_voice_message(message: types.CallbackQuery, state: FSMC
 @router.callback_query(lambda callback_query: callback_query.data == 'no', UseGPT.state1_user_request)
 async def voice_message_repeat(message: types.CallbackQuery) -> None:
     await message.message.answer(text=LEXICON_RU['repeat_voice_message'])
+
+
+
 

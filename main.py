@@ -3,16 +3,17 @@ import datetime
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from aiogram import Bot, Dispatcher
-from bot.handlers import user_handlers, admin_handlers, group_handlers, dalle_handlers, voice_handlers, other_handlers
+from bot.handlers import user_handlers, admin_handlers, group_handlers, dalle_handlers, \
+    voice_handlers, other_handlers, translate_handlers
 from bot.keyboards.set_menu import set_main_menu
 from aiogram.fsm.storage.memory import MemoryStorage
 #from bot.models.methods import db_start
 from bot.config_data.config import load_config
 
 
-# async def on_startup():
-#     await db_start()
-#     pass
+#async def on_startup():
+    #await db_start()
+    #pass
 
 
 async def main() -> None:
@@ -39,7 +40,7 @@ async def main() -> None:
     # Конфигурируем логирование
     logging.basicConfig(
         level=logging.INFO,
-        filename='logs/bot_logs.log',
+        #filename='logs/bot_logs.log',
         format='%(filename)s:%(lineno)d #%(levelname)-8s '
                '[%(asctime)s] - %(name)s - %(message)s',
     )
@@ -59,7 +60,8 @@ async def main() -> None:
     await set_main_menu(bot)
 
     # Регистрируем роутеры в диспетчере
-    dp.include_routers(group_handlers.router, user_handlers.router, voice_handlers.router, dalle_handlers.router, admin_handlers.router, other_handlers.router)
+    dp.include_routers(group_handlers.router, user_handlers.router, voice_handlers.router,
+                       dalle_handlers.router, admin_handlers.router, other_handlers.router, translate_handlers.router)
 
     # Пропускаем накопившиеся апдейты и запускаем polling
     await bot.delete_webhook(drop_pending_updates=True)

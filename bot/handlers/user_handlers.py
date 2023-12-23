@@ -35,6 +35,7 @@ user_dict: dict[int, dict[str, str, str]] = {}
 @router.callback_query(lambda callback_query: callback_query.data == 'back')
 async def process_start_command(message: types.Message | types.CallbackQuery, state: FSMContext) -> None:
     #print(message.model_dump_json())
+    #await message.answer(message.model_dump_json())
     if isinstance(message, types.CallbackQuery):
         #await message.message.answer(text=LEXICON_RU['/start']) #reply_markup=get_main_kb()
         await message.message.answer_photo(FSInputFile("ava.jpg"), caption=LEXICON_RU['/start'])
@@ -81,6 +82,7 @@ async def context_clear(message: types.Message, state: FSMContext) -> None:
 @router.message(F.text, UseGPT.state1_user_request) #, SubChecker()
 async def send_message(message: types.Message, bot: Bot) -> None:
     #logger.info(f"Пользователь {message.from_user.username}(id={message.from_user.id}) спрашивает: {message.text}")
+    await message.answer(message.model_dump_json())
     client = user_dict[message.from_user.id]['client_key']
     assistant = user_dict[message.from_user.id]['assistant_key']
     thread = user_dict[message.from_user.id]['thread_key']

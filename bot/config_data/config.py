@@ -7,6 +7,7 @@ class OpenaiConfig:
     organization_id: str         # id компании
     api_key: str
     assistant_id: str
+    assistant_translate_id: str
 
 
 @dataclass
@@ -49,6 +50,7 @@ def load_config(path: str | None = None) -> Config:
             organization_id=env('OPEN_AI_ORGANIZATION_ID'),
             api_key=env('OPENAI_API_KEY'),
             assistant_id=env('ASSISTANT_ID'),
+            assistant_translate_id=env('ASSISTANT_TRANSLATE_ID')
         ),
         database=DatabaseConfig(
             db_password="123456"
