@@ -60,5 +60,6 @@ async def send_media_message(message: types.Message, bot: Bot, state: FSMContext
             # Обработка случая, когда статус не изменился в течение timeout (сек)
             await waiting_message.edit_text(text=LEXICON_RU['no_response'])
     except Exception as er:
-        await message.answer(f"Произошла ошибка: {er}! \n\nПовторите запрос")
+        await message.answer(f"‼️ Произошла ошибка:\n\n {er}! \n\nВы можете повторите запрос ⏬")
+        #await message.answer("Произошла ошибка: {er}! \n\nПовторите запрос")
     #await state.update_data(message_voice=text_from_voice)

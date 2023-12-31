@@ -55,7 +55,7 @@ async def create_image_start(message: types.Message, state: FSMContext) -> None:
 
 
 @router.message(Command(commands=['gpt']))
-async def process_start_command(message: types.Message | types.CallbackQuery, state: FSMContext) -> None:
+async def process_gpt_command(message: types.Message | types.CallbackQuery, state: FSMContext) -> None:
     #await sql_add_user(message)
     client = await connect_client()
     assistant = await create_assistant()
@@ -82,7 +82,7 @@ async def context_clear(message: types.Message, state: FSMContext) -> None:
 @router.message(F.text, UseGPT.state1_user_request) #, SubChecker()
 async def send_message(message: types.Message, bot: Bot) -> None:
     #logger.info(f"Пользователь {message.from_user.username}(id={message.from_user.id}) спрашивает: {message.text}")
-    await message.answer(message.model_dump_json())
+    #await message.answer(message.model_dump_json())
     client = user_dict[message.from_user.id]['client_key']
     assistant = user_dict[message.from_user.id]['assistant_key']
     thread = user_dict[message.from_user.id]['thread_key']
