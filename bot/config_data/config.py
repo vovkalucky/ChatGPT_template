@@ -13,6 +13,7 @@ class OpenaiConfig:
 @dataclass
 class TgBot:
     token: str            # Токен для доступа к телеграм-боту
+    bot_id: int
     admin_ids: list[int]  # Список id администраторов бота
     group_id: int         # id группы в которой будет работать бот
     group_link: str        # ссылка на группу в которой будет работать бот
@@ -39,6 +40,7 @@ def load_config(path: str | None = None) -> Config:
     return Config(
         tg_bot=TgBot(
             token=env('BOT_TOKEN'),
+            bot_id=env('BOT_ID'),
             admin_ids=list(map(int, env.list('ADMIN_IDS'))),
             group_id=env('GROUP_ID'),
             group_link=env('GROUP_LINK'),

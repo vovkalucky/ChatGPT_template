@@ -1,12 +1,8 @@
-import asyncio
-import os
-from openai import OpenAI
-from bot.config_data.config import load_config
-config = load_config()
+from bot.external_services.chatgpt4 import OpenaiSession
 
 
 async def create_image(prompt: str):
-    client = OpenAI(api_key=config.open_ai.api_key, organization=config.open_ai.organization_id)
+    client = OpenaiSession().client
     response = client.images.generate(
       model="dall-e-3",
       style="vivid", #natural

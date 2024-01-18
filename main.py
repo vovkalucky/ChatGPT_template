@@ -1,5 +1,4 @@
 import asyncio
-import datetime
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from aiogram import Bot, Dispatcher
@@ -7,7 +6,6 @@ from bot.handlers import user_handlers, admin_handlers, group_handlers, dalle_ha
     voice_handlers, other_handlers, translate_handlers
 from bot.keyboards.set_menu import set_main_menu
 from aiogram.fsm.storage.memory import MemoryStorage
-#from bot.models.methods import db_start
 from bot.config_data.config import load_config
 
 
@@ -23,7 +21,6 @@ async def main() -> None:
 
     # Создаем handler
     handler = TimedRotatingFileHandler(f'logs/bot_logs.log', when='D', backupCount=4)
-    #handler.setLevel(logging.INFO)
 
     # Настройка формата сообщений
     # formatter = logging.Formatter('%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s')
@@ -32,24 +29,18 @@ async def main() -> None:
     # Добавляем handler к логгеру
     logger.addHandler(handler)
 
-
-    # Инициализируем логгер
-    #logger = logging.getLogger(__name__)
-
-
     # Конфигурируем логирование
     logging.basicConfig(
-        level=logging.INFO,
+        level=logging.INFO, #WARNING
         #filename='logs/bot_logs.log',
-        format='%(filename)s:%(lineno)d #%(levelname)-8s '
-               '[%(asctime)s] - %(name)s - %(message)s',
+        format='[%(asctime)s] #%(levelname)-8s %(filename)s:'
+             '%(lineno)d - %(name)s - %(message)s'
     )
+    print(logger.handlers)
 
     # Выводим в консоль информацию о начале запуска бота
     logger.info('Starting bot')
-
     config = load_config()
-
     bot: Bot = Bot(token=config.tg_bot.token, parse_mode='HTML')
 
     # Инициализируем хранилище (создаем экземпляр класса MemoryStorage)
